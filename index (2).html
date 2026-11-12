@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Financially Forward</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Mono:wght@500&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one centred column, one question per screen. Palette borrows the colours of Canadian banknotes, and the result panel is the single loud moment. */
+:root {
+  --bg: #F2F5F8;
+  --surface: #FFFFFF;
+  --fg: #14202B;
+  --muted: #566574;
+  --line: #D3DBE3;
+  --blue: #1F5FBF;
+  --red: #C0302A;
+  --green: #17753F;
+  --purple: #7440B8;
+  --on-color: #FFFFFF;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E161E;
+    --surface: #16212B;
+    --fg: #E8EDF2;
+    --muted: #9BAABA;
+    --line: #2A3846;
+    --blue: #7DAAF2;
+    --red: #F27B74;
+    --green: #5DCB8A;
+    --purple: #B993F2;
+    --on-color: #0E161E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E161E;
+  --surface: #16212B;
+  --fg: #E8EDF2;
+  --muted: #9BAABA;
+  --line: #2A3846;
+  --blue: #7DAAF2;
+  --red: #F27B74;
+  --green: #5DCB8A;
+  --purple: #B993F2;
+  --on-color: #0E161E;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  padding-block: 1.5rem 3rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 40rem; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; line-height: 1.1; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+.mono { font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.04em; }
+.label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+.t-saver { --t: var(--blue); }
+.t-planner { --t: var(--purple); }
+.t-hustler { --t: var(--green); }
+.t-treat { --t: var(--red); }
+
+.screen { display: flex; flex-direction: column; gap: 1.75rem; }
+
+/* Buttons */
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  background: var(--fg);
+  color: var(--bg);
+  font: 700 1rem/1 var(--font-body);
+  padding: 1rem 1.5rem;
+  min-height: 3.25rem;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.btn:hover { opacity: 0.88; }
+.btn.ghost { background: transparent; color: var(--fg); border: 1.5px solid var(--fg); }
+.btn[aria-disabled="true"] { opacity: 0.4; cursor: default; }
+.btn:focus-visible, .opt:focus-visible, .seg-btn:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+
+/* Start */
+.intro h1 { font-size: clamp(2.4rem, 9vw, 3.75rem); font-weight: 800; letter-spacing: -0.025em; }
+.intro p.lead { color: var(--muted); max-width: 34rem; }
+.types { display: flex; flex-direction: column; border-top: 1.5px solid var(--line); }
+.types li { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); gap: 1rem; align-items: center; padding-block: 0.85rem; border-bottom: 1.5px solid var(--line); }
+.swatch {
+  height: 1.75rem;
+  border-radius: 3px;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 6px), var(--t);
+}
+.types .name { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
+.types .blurb { color: var(--muted); font-size: 0.95rem; }
+
+/* Progress and questions */
+.progress { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.75rem; }
+.ticks { display: flex; gap: 3px; }
+.tick { flex: 1; height: 6px; border-radius: 2px; background: var(--line); }
+.tick.done { background: var(--fg); }
+.q-text { font-size: clamp(1.5rem, 5.5vw, 2rem); font-weight: 800; letter-spacing: -0.015em; }
+#q-text:focus, #t-title:focus { outline: none; }
+.options { display: flex; flex-direction: column; gap: 0.7rem; }
+.opt {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  text-align: left;
+  font: 500 1.0625rem/1.4 var(--font-body);
+  color: var(--fg);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.95rem 1rem;
+  min-height: 3.5rem;
+  cursor: pointer;
+}
+.opt .key { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); padding-top: 0.2rem; }
+.opt:hover { border-color: var(--fg); }
+.opt.picked, .opt.right { border-color: var(--fg); box-shadow: 0 0 0 1px var(--fg); }
+.opt.wrong { border-color: var(--fg); border-style: dashed; box-shadow: 0 0 0 1px var(--fg); }
+.opt.picked .key, .opt.right .key, .opt.wrong .key { color: var(--fg); }
+.opt.dim { opacity: 0.55; cursor: default; }
+.opt.dim:hover { border-color: var(--line); }
+.opt[aria-disabled="true"] { cursor: default; }
+.opt .tag { display: block; margin-top: 0.35rem; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+.conf { display: flex; flex-direction: column; gap: 0.6rem; }
+.seg { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.seg-btn {
+  appearance: none;
+  flex: 1 1 6rem;
+  font: 600 0.95rem/1.2 var(--font-body);
+  color: var(--fg);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem 0.75rem;
+  min-height: 3rem;
+  cursor: pointer;
+}
+.seg-btn:hover { border-color: var(--fg); }
+.seg-btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.seg-btn[aria-disabled="true"] { cursor: default; }
+
+.fact { border-top: 1.5px solid var(--fg); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.fact .verdict { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; }
+.fact p.text { max-width: 36rem; }
+.fact .btn { margin-top: 0.9rem; }
+
+/* Workshop topics */
+.chk-list { display: flex; flex-direction: column; gap: 0.6rem; border: 0; padding: 0; margin: 0; min-width: 0; }
+.chk {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  min-height: 3.25rem;
+  cursor: pointer;
+}
+.chk:hover { border-color: var(--fg); }
+.chk input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; accent-color: var(--fg); }
+.chk:has(input:checked) { border-color: var(--fg); box-shadow: 0 0 0 1px var(--fg); }
+.chk:has(input:focus-visible) { outline: 3px solid var(--fg); outline-offset: 3px; }
+.copyrow { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.copy-status { color: var(--muted); font-size: 0.9rem; }
+.copy-box { width: 100%; min-height: 6rem; font: 400 0.95rem/1.4 var(--font-body); color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 0.75rem; }
+
+/* Result */
+.hero {
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.10) 0 2px, transparent 2px 7px), var(--t);
+  color: var(--on-color);
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.hero .mono { opacity: 0.85; text-transform: uppercase; }
+.hero h1 { font-size: clamp(2.4rem, 10vw, 4.25rem); font-weight: 800; letter-spacing: -0.03em; }
+.hero #r-name:focus { outline: none; }
+.hero .tag { font-size: 1.2rem; font-weight: 600; max-width: 28rem; }
+.blend { color: var(--muted); font-size: 0.95rem; margin-top: -0.75rem; }
+.desc { max-width: 36rem; }
+
+.block { display: flex; flex-direction: column; gap: 0.9rem; }
+.block h2 { font-size: 1.35rem; font-weight: 800; }
+.bars { display: flex; flex-direction: column; gap: 0.7rem; }
+.bar { display: grid; grid-template-columns: 8.25rem minmax(0, 1fr) 2.75rem; gap: 0.75rem; align-items: center; }
+.bar .n { font-weight: 600; font-size: 0.95rem; }
+.bar .track { height: 0.9rem; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar .fill { height: 100%; width: 0; background: var(--t); transition: width 0.7s cubic-bezier(.2,.7,.2,1); }
+.bar .pct { font-family: var(--font-mono); font-size: 0.8125rem; text-align: right; font-variant-numeric: tabular-nums; }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.5rem; }
+.two > div { min-width: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.bullets { display: flex; flex-direction: column; gap: 0.6rem; }
+.bullets li { position: relative; padding-left: 1.25rem; }
+.bullets li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 0.55rem; height: 0.55rem; background: var(--t, var(--fg)); border-radius: 1px; }
+.moves { display: flex; flex-direction: column; border-top: 1.5px solid var(--line); }
+.moves li { padding-block: 1rem; border-bottom: 1.5px solid var(--line); display: flex; flex-direction: column; gap: 0.2rem; }
+.moves .mt { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
+.moves .md { color: var(--muted); }
+
+.kc { display: flex; flex-direction: column; border-top: 1.5px solid var(--line); }
+.kc-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 0.75rem; align-items: baseline; padding-block: 0.75rem; border-bottom: 1.5px solid var(--line); }
+.kc-row .kt { font-weight: 600; }
+.kc-row .kr { font-weight: 700; }
+.kc-row .kf { color: var(--muted); min-width: 5.5rem; text-align: right; }
+.kc-score { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; }
+
+.note { color: var(--muted); font-size: 0.875rem; max-width: 34rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+.code-box { font-family: var(--font-mono); font-size: 0.95rem; background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 0.9rem 1rem; overflow-wrap: anywhere; user-select: all; }
+.note a { color: inherit; text-underline-offset: 3px; }
+.note a:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+.codes { width: 100%; font: 400 0.95rem/1.4 var(--font-mono); color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 0.75rem; resize: vertical; }
+.codes:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+#a-title:focus { outline: none; }
+.ranks { display: flex; flex-direction: column; gap: 0.9rem; }
+.rank { display: flex; flex-direction: column; gap: 0.35rem; }
+.rank-top { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.rank-top .mono { white-space: nowrap; }
+.rank-label { font-weight: 600; min-width: 0; }
+.rank .track { height: 0.9rem; background: var(--line); border-radius: 2px; overflow: hidden; }
+.rank .fill { height: 100%; background: var(--t, var(--fg)); }
+.kc-row.stack { display: flex; flex-direction: column; gap: 0.15rem; }
+.kc-row.stack .kd { color: var(--muted); font-size: 0.95rem; }
+
+@media (max-width: 420px) {
+  .bar { grid-template-columns: 7rem minmax(0, 1fr) 2.5rem; gap: 0.5rem; }
+  .bar .n { font-size: 0.875rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar .fill { transition: none; }
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <div class="progress" id="progress" hidden>
+    <div class="ticks" id="ticks" aria-hidden="true"></div>
+    <p class="mono" id="q-count" aria-live="polite"></p>
+  </div>
+
+  <section class="screen intro" id="screen-start" aria-labelledby="start-title">
+    <p class="label">Financial Habits &amp; Literacy Survey &middot; Grade 11 and 12</p>
+    <h1 id="start-title">Financially Forward</h1>
+    <p class="lead">Work through 10 real-life money scenarios, take a 4-question knowledge check, and tell us what you'd like to learn. You finish with your money type and a snapshot of what you know. It takes about 6 minutes.</p>
+    <ul class="types" aria-label="The four money types">
+      <li class="t-saver"><span class="swatch"></span><div><div class="name">The Saver</div><div class="blurb">Puts security first and likes a cushion.</div></div></li>
+      <li class="t-planner"><span class="swatch"></span><div><div class="name">The Planner</div><div class="blurb">Researches and budgets before deciding.</div></div></li>
+      <li class="t-hustler"><span class="swatch"></span><div><div class="name">The Hustler</div><div class="blurb">Looks for ways to earn and grow money.</div></div></li>
+      <li class="t-treat"><span class="swatch"></span><div><div class="name">The Treat-Yourself</div><div class="blurb">Values experiences and spends on what they enjoy.</div></div></li>
+    </ul>
+    <p class="note">No type is better than another. Pick the answer you would really give. The survey never asks for your name.</p>
+    <button class="btn" id="start" type="button">Start the survey</button>
+    <p class="note"><a href="#organizer" id="open-admin">Running this for a group? Combine your students' result codes.</a></p>
+  </section>
+
+  <section class="screen" id="screen-quiz" aria-labelledby="q-text" hidden>
+    <p class="label" id="q-topic"></p>
+    <h2 class="q-text" id="q-text" tabindex="-1"></h2>
+    <ul class="options" id="q-options"></ul>
+    <div class="conf" id="conf" hidden>
+      <p class="label" id="conf-label">How sure are you?</p>
+      <div class="seg" id="seg" role="group" aria-labelledby="conf-label"></div>
+    </div>
+    <button class="btn" id="check" type="button" hidden>Check my answer</button>
+    <div class="fact" id="fact" aria-live="polite" hidden>
+      <p class="label" id="fact-label">Money fact</p>
+      <p class="verdict" id="fact-verdict" hidden></p>
+      <p class="text" id="fact-text"></p>
+      <button class="btn" id="next" type="button">Next question</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-topics" aria-labelledby="t-title" hidden>
+    <h2 class="q-text" id="t-title" tabindex="-1">Which topics would you find most valuable to learn about in an interactive workshop?</h2>
+    <fieldset class="chk-list" id="topic-list">
+      <legend class="label" style="margin-bottom:0.75rem">Select all that apply</legend>
+    </fieldset>
+    <div class="copyrow">
+      <button class="btn ghost" id="copy" type="button" aria-disabled="true">Copy selected topics (0)</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
+    <textarea class="copy-box" id="copy-box" readonly hidden aria-label="Selected topics"></textarea>
+    <button class="btn" id="topics-done" type="button">See my result</button>
+  </section>
+
+  <section class="screen" id="screen-result" aria-labelledby="r-name" hidden>
+    <div class="hero" id="result-hero">
+      <p class="mono">Your money type</p>
+      <h1 id="r-name" tabindex="-1"></h1>
+      <p class="tag" id="r-tag"></p>
+    </div>
+    <p class="blend" id="r-blend"></p>
+    <p class="desc" id="r-desc"></p>
+
+    <div class="block">
+      <h2>How your answers split</h2>
+      <div class="bars" id="r-bars"></div>
+      <p class="note">No type is the wrong one. Spending on experiences is fine when it is planned and affordable.</p>
+    </div>
+
+    <div class="two">
+      <div>
+        <h2 class="label">You are good at</h2>
+        <ul class="bullets" id="r-strengths"></ul>
+      </div>
+      <div>
+        <h2 class="label">Watch out for</h2>
+        <ul class="bullets" id="r-watch"></ul>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Three things to try</h2>
+      <ul class="moves" id="r-moves"></ul>
+    </div>
+
+    <div class="block">
+      <h2>Your quick check</h2>
+      <p class="kc-score" id="kc-score"></p>
+      <ul class="kc" id="kc-rows"></ul>
+      <p class="desc" id="kc-note"></p>
+    </div>
+
+    <div class="block">
+      <h2>What you want to learn</h2>
+      <ul class="bullets" id="r-topics"></ul>
+    </div>
+
+    <p class="note" id="send-status" aria-live="polite" hidden></p>
+
+    <div class="block" id="code-block">
+      <h2>Your result code</h2>
+      <p class="desc">If the person who shared this survey asked for your result, copy this code and send it to them. It contains your answers but no name.</p>
+      <p class="code-box" id="r-code"></p>
+      <div class="copyrow">
+        <button class="btn ghost" id="copy-code" type="button">Copy my code</button>
+        <span class="copy-status" id="code-status" aria-live="polite"></span>
+      </div>
+      <textarea class="copy-box" id="code-box" readonly hidden aria-label="Your result code"></textarea>
+    </div>
+
+    <p class="note">Facts are general information about money in Canada. They are not personal financial advice, and the growth example assumes a steady return that real investments do not guarantee.</p>
+    <div class="actions">
+      <button class="btn" id="retake" type="button">Take it again</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-admin" aria-labelledby="a-title" hidden>
+    <p class="label">For the survey organizer</p>
+    <h2 class="q-text" id="a-title" tabindex="-1">Combine result codes</h2>
+    <p class="desc">Students copy a result code from the end of the survey and send it to you. Paste every code here, in any layout. Totals update as you paste. Nothing is uploaded.</p>
+    <div class="block">
+      <label class="label" for="codes">Result codes</label>
+      <textarea class="codes" id="codes" rows="8" spellcheck="false" placeholder="FF1-PSHTPPHSTP-R2W1U0R2-A4C"></textarea>
+      <p class="note" id="a-status" aria-live="polite"></p>
+    </div>
+    <div class="screen" id="a-out" hidden>
+      <div class="block">
+        <h2>Money types</h2>
+        <ul class="ranks" id="a-types"></ul>
+        <p class="note">A student tied between two types is counted once, under whichever comes first in this order: Saver, Planner, Hustler, Treat-Yourself.</p>
+      </div>
+      <div class="block">
+        <h2>Quick check</h2>
+        <p class="kc-score" id="a-avg"></p>
+        <ul class="kc" id="a-kc"></ul>
+      </div>
+      <div class="block">
+        <h2>Workshop topics</h2>
+        <ul class="ranks" id="a-topics"></ul>
+      </div>
+      <div class="copyrow">
+        <button class="btn ghost" id="a-copy-totals" type="button">Copy totals</button>
+        <button class="btn ghost" id="a-copy-rows" type="button">Copy all responses</button>
+        <span class="copy-status" id="a-copy-status" aria-live="polite"></span>
+      </div>
+      <p class="note">Both copy buttons paste into Google Sheets or Excel as rows and columns.</p>
+      <textarea class="copy-box" id="a-copy-box" readonly hidden aria-label="Text to copy"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" id="a-back" type="button">Back to survey</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  /* Paste your Google Apps Script web app URL between the quotes. Leave it empty to use result codes only. */
+  var ENDPOINT = "";
+
+  var TYPES = {
+    saver: {
+      name: "The Saver",
+      tagline: "Security first.",
+      desc: "You put safety and stability first. You like knowing money is set aside before you spend, and you think about what could go wrong. That habit protects you, and it works even better when your savings are growing too.",
+      strengths: ["You build a cushion without being told to.", "Unexpected costs rarely throw you off."],
+      watch: ["Cash in a basic account loses buying power as prices rise.", "Avoiding every risk and every purchase can mean missing growth or things that matter to you."],
+      moves: [
+        { t: "Put your savings to work.", d: "Look at a high-interest savings account, or a TFSA once you are 18, so your balance grows faster than it would in a basic account." },
+        { t: "Set a guilt-free spending amount.", d: "Choose a monthly amount that is yours to spend on anything, so saving never feels like a punishment." },
+        { t: "Learn how diversified investing works.", d: "Index funds spread your money across many companies. Learning the basics now makes the first step easier later." }
+      ]
+    },
+    planner: {
+      name: "The Planner",
+      tagline: "Think it through, then act.",
+      desc: "You research, budget and weigh the long-term cost of a choice before you commit. That keeps you out of trouble and makes your goals reachable. The next step is turning plans into action so time can work for you.",
+      strengths: ["You compare options and total costs before you buy.", "You balance today's needs with tomorrow's goals."],
+      watch: ["Planning for too long can delay starting, and time is what makes savings grow.", "A plan only helps if you review it when your income or goals change."],
+      moves: [
+        { t: "Start small, start now.", d: "Set up an automatic transfer of even $20 a week. You can change the amount later." },
+        { t: "Book a money check-in.", d: "Every few months, spend fifteen minutes reviewing your spending and goals, then update your plan." },
+        { t: "Map your costs after high school.", d: "List what you will need over the next year, such as tuition, rent and a phone plan, and what will pay for each." }
+      ]
+    },
+    hustler: {
+      name: "The Hustler",
+      tagline: "Always looking for the next way to grow.",
+      desc: "You look for ways to earn more and make your money work harder, from side jobs to investing. That drive is a real asset. It works best with a safety net underneath it and a healthy doubt about anything that sounds too good.",
+      strengths: ["You look for ways to earn, not only ways to save.", "You are curious about how investing works."],
+      watch: ["Higher returns come with higher risk, and money can disappear fast.", "Without savings behind you, one bad month can force you to sell at the worst time."],
+      moves: [
+        { t: "Build a safety net first.", d: "Aim for three to six months of basic expenses in savings, then take bigger risks with the rest." },
+        { t: "Spread your bets.", d: "Putting everything into one stock or coin means one drop can wipe you out. Spreading money across many investments lowers that risk." },
+        { t: "Check who is selling.", d: "Before sending money to any investment, confirm the seller is registered with your provincial securities regulator. Pressure to act fast is a warning sign." }
+      ]
+    },
+    treat: {
+      name: "The Treat-Yourself",
+      tagline: "Money is for living, too.",
+      desc: "You see money as something to enjoy, whether that is time with friends, trips or good food. That is not irresponsible when it is planned and affordable. The goal is to make sure the fun is paid for and a cushion is there when life surprises you.",
+      strengths: ["You value experiences and the people you share them with.", "You are generous and flexible when plans change."],
+      watch: ["Small impulse buys and payment plans add up faster than they feel.", "With no cushion, a surprise cost can turn into debt."],
+      moves: [
+        { t: "Pay yourself first.", d: "When money arrives, move 10% to savings before you spend any of it. An automatic transfer makes this easy." },
+        { t: "Give your fun a budget.", d: "Decide a monthly amount for experiences. Spending it is then planned, and you can enjoy it without guilt." },
+        { t: "Audit your subscriptions.", d: "Check your accounts this week and cancel anything you have not used in the past month." }
+      ]
+    }
+  };
+
+  var SCEN = [
+    {
+      topic: "Managing Unexpected Income",
+      q: "You receive $500 unexpectedly. How would you decide what to do with the money?",
+      opts: [
+        { t: "saver", text: "Put most of it into savings first and only spend what's left." },
+        { t: "planner", text: "Check my upcoming expenses and goals, then divide it up on purpose." },
+        { t: "hustler", text: "Look for a way to make it grow, like investing it or starting a small business idea." },
+        { t: "treat", text: "Spend a good part on something I've been wanting and save the rest." }
+      ],
+      fact: "Unplanned money is easy to spend without noticing. Deciding the split before you spend, for example some for needs, some for savings and some for fun, keeps the whole amount from vanishing."
+    },
+    {
+      topic: "Budgeting and Expense Management",
+      q: "You earn $800 a month from a part-time job. How would you manage it to cover your personal expenses and still save?",
+      opts: [
+        { t: "saver", text: "Move a set amount into savings as soon as I'm paid, then spend what's left." },
+        { t: "planner", text: "Write a budget: list my regular costs, then split the rest between spending and saving." },
+        { t: "hustler", text: "Cover my basics and put the extra toward a side hustle or investment." },
+        { t: "treat", text: "Spend on what I enjoy during the month and save whatever remains at the end." }
+      ],
+      fact: "A common guide is the 50/30/20 rule: about half of income for needs, 30% for wants and 20% for savings. On $800 a month that is $400, $240 and $160. Paying yourself first makes saving far more likely than saving what is left."
+    },
+    {
+      topic: "Understanding Your Paycheque",
+      q: "You receive your first paycheque and the amount deposited is lower than your total earnings. What would you do to understand the difference?",
+      opts: [
+        { t: "saver", text: "Ask my manager or a parent to explain it, then budget only on the take-home amount." },
+        { t: "planner", text: "Read the pay stub line by line to see each deduction." },
+        { t: "hustler", text: "Look up how to keep more of what I earn, like tax credits and filing a return." },
+        { t: "treat", text: "Not worry about it. What's in my account is what I get to spend." }
+      ],
+      fact: "Gross pay is what you earned. Net pay is what you take home after deductions. Depending on your age and pay, those can include income tax, EI and, from age 18, CPP. If your income is low, you may get some of the income tax back by filing a tax return."
+    },
+    {
+      topic: "Making Informed Purchasing Decisions",
+      q: "You're considering a new $1,300 phone. Your current phone still works, but the new model has extra features. What would influence your decision?",
+      opts: [
+        { t: "saver", text: "Whether my current phone still does the job. If it does, I keep it." },
+        { t: "planner", text: "The total cost, the features I'd actually use, and what else that money could do." },
+        { t: "hustler", text: "Whether that money could earn more somewhere else than it would in a phone." },
+        { t: "treat", text: "How much I'd enjoy it every day, as long as I can pay for it without stress." }
+      ],
+      fact: "Opportunity cost is what you give up when you choose something. $1,300 spent on a phone cannot also go toward savings or a goal. A payment plan spreads the cost out but does not lower it, and missed payments can bring fees."
+    },
+    {
+      topic: "Understanding Credit and Debt",
+      q: "You're thinking about applying for your first credit card. What's the most important thing to understand before using it?",
+      opts: [
+        { t: "saver", text: "Making sure I can pay the full balance every month." },
+        { t: "planner", text: "The interest rate and fees, and how they add up over time." },
+        { t: "hustler", text: "The rewards and cash back I could earn." },
+        { t: "treat", text: "The credit limit and what it lets me buy." }
+      ],
+      fact: "If you pay your full statement balance by the due date, you usually pay no interest on purchases. If you carry a balance, interest is often around 20% a year or more. On-time payments help build your credit score, which in Canada runs from 300 to 900."
+    },
+    {
+      topic: "Evaluating Financial Opportunities",
+      q: "You see an investment ad online claiming a 40% return in a short time. How would you approach it?",
+      opts: [
+        { t: "saver", text: "Avoid it. If it sounds too good to be true, my money stays put." },
+        { t: "planner", text: "Research who is selling it and compare it with other options before deciding." },
+        { t: "hustler", text: "Put in a small amount I can afford to lose and watch how it does." },
+        { t: "treat", text: "Jump in. If it pays off, I get to treat myself." }
+      ],
+      fact: "A high return always comes with high risk, and no legitimate investment can guarantee a big profit. Pressure to act fast is a classic scam sign. Before sending money, check that the seller is registered with your provincial securities regulator."
+    },
+    {
+      topic: "Recognizing Hidden Costs",
+      q: "You're planning a weekend trip with friends. The advertised price is $100 per person, but transportation, meals and extra fees aren't included. How would you decide if it fits your budget?",
+      opts: [
+        { t: "saver", text: "Ask the group for cheaper options, like carpooling and cooking some meals, to spend as little as I can." },
+        { t: "planner", text: "List every cost, including transport, food, activities and extras, and check the total against my budget." },
+        { t: "hustler", text: "Pick up extra shifts or sell something to cover the cost so my savings stay untouched." },
+        { t: "treat", text: "Say yes. A trip with friends is worth some extra spending." }
+      ],
+      fact: "The advertised price is rarely the total price. Transportation, meals, activities and spending money can easily push a $100 trip past $250. List every cost before you say yes, then add about 10% as a cushion for surprises."
+    },
+    {
+      topic: "Preparing for Financial Independence",
+      q: "You plan to move out after graduating high school. Which expenses would you need to account for to see if you can afford it?",
+      opts: [
+        { t: "saver", text: "Rent and bills first, plus savings for a deposit and emergencies." },
+        { t: "planner", text: "Rent, utilities, groceries, transit, phone and insurance, added into one monthly total." },
+        { t: "hustler", text: "The income I'd need, so I'd work out how to earn enough before moving." },
+        { t: "treat", text: "Rent and food, with room left for going out and a social life." }
+      ],
+      fact: "Beyond rent, budget for utilities, internet, groceries, transit, a phone plan and tenant insurance. Landlords may also ask for a deposit up front, often one month's rent. A common guide is to keep rent at or below about 30% of your before-tax income."
+    },
+    {
+      topic: "Building Financial Security",
+      q: "You've saved $1,000, but you have upcoming expenses and no emergency savings. How would you divide your money?",
+      opts: [
+        { t: "saver", text: "Put most of it aside as an emergency fund and only spend what's urgent." },
+        { t: "planner", text: "List the upcoming expenses, cover the essential ones, and put what's left into an emergency fund." },
+        { t: "hustler", text: "Cover the essentials, then look for extra income to rebuild my savings quickly." },
+        { t: "treat", text: "Pay the upcoming bills and keep a little for fun so I don't feel stuck." }
+      ],
+      fact: "Many experts suggest an emergency fund that covers three to six months of basic expenses. If that sounds huge, start with a smaller goal such as $500 or one month of costs, so a surprise bill does not end up on a credit card."
+    },
+    {
+      topic: "Planning for Long-Term Financial Goals",
+      q: "Thinking about your finances 10 years from now, which area would you most want to understand or improve?",
+      opts: [
+        { t: "saver", text: "Building savings and an emergency fund." },
+        { t: "planner", text: "Planning for big goals like school costs and buying a home." },
+        { t: "hustler", text: "Investing and growing my money." },
+        { t: "treat", text: "Making sure I can still afford the experiences I care about, like travel." }
+      ],
+      fact: "Saving $100 a month at a steady 6% grows to about $16,400 in 10 years and about $46,200 in 20 years. Only $24,000 of that is your own deposits. Real returns vary, so treat this as an example."
+    }
+  ];
+
+  var KNOW = [
+    {
+      topic: "Paycheques",
+      q: "Your gross pay for a shift is $120, but you take home less. What explains the difference?",
+      opts: [
+        { text: "Deductions such as income tax and EI, plus CPP if you're 18 or older", right: true },
+        { text: "The bank charges a fee to deposit paycheques" },
+        { text: "Employers hold back part of your pay for your first three months" },
+        { text: "Your employer almost certainly made a mistake" }
+      ],
+      why: "Employers take deductions off your pay and send them to the government. Your pay stub lists each one, so read it line by line."
+    },
+    {
+      topic: "Credit cards",
+      q: "A credit card charges 20% interest a year. You buy something and pay the full statement balance by the due date. How much interest do you pay on that purchase?",
+      opts: [
+        { text: "Usually none, because of the grace period", right: true },
+        { text: "20% of the purchase price" },
+        { text: "Half the yearly rate, because you paid on time" },
+        { text: "A flat $20 fee on every purchase" }
+      ],
+      why: "Most cards give a grace period. Pay the full statement balance by the due date and you usually pay no interest on purchases. Interest starts when you carry a balance."
+    },
+    {
+      topic: "Investment scams",
+      q: "An online ad promises a guaranteed 25% return in three months. What is the most accurate way to read it?",
+      opts: [
+        { text: "A warning sign, because high returns carry high risk and nothing is guaranteed", right: true },
+        { text: "A good deal if the website looks professional" },
+        { text: "Safe if a friend says they've already joined" },
+        { text: "Fine as long as I start with a small amount" }
+      ],
+      why: "Real investments cannot guarantee big returns. Scams often use professional websites, glowing testimonials and pressure to act fast."
+    },
+    {
+      topic: "Starting early",
+      q: "Ava and Ben each save $100 a month at the same return, and both stop at age 40. Ava starts at 18 and Ben starts at 28. Who ends up with more?",
+      opts: [
+        { text: "Ava, because her money has more years to grow", right: true },
+        { text: "They end up the same, since they save the same monthly amount" },
+        { text: "Ben, because older savers earn higher returns" },
+        { text: "It depends only on luck, not on when they start" }
+      ],
+      why: "Time is the biggest ingredient in compound growth. Ava deposits more in total, and her early deposits also have extra years to earn returns."
+    }
+  ];
+
+  var TOPICS = [
+    "Budgeting and managing personal expenses",
+    "Saving strategies and building emergency funds",
+    "Credit cards, credit scores and responsible borrowing",
+    "Loans, interest rates and managing debt",
+    "Understanding paycheques, taxes and payroll deductions",
+    "Investing, stocks and building wealth",
+    "Banking and managing financial accounts",
+    "Housing costs, rent and moving out",
+    "Post-secondary education costs and student loans",
+    "Smart spending, subscriptions and buy now pay later",
+    "Recognizing financial scams and protecting personal information",
+    "Managing financial stress and financial decision-making"
+  ];
+
+  var CONF = ["Guessing", "Fairly sure", "Very sure"];
+  var STEPS = [];
+  SCEN.forEach(function (s, i) { STEPS.push({ kind: "s", i: i }); });
+  KNOW.forEach(function (k, i) { STEPS.push({ kind: "k", i: i }); });
+  STEPS.push({ kind: "t" });
+
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function shuffle(a) {
+    var r = a.slice();
+    for (var i = r.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = r[i]; r[i] = r[j]; r[j] = t;
+    }
+    return r;
+  }
+
+  var screens = { start: $("screen-start"), quiz: $("screen-quiz"), topics: $("screen-topics"), result: $("screen-result"), admin: $("screen-admin") };
+  function show(name) {
+    for (var k in screens) screens[k].hidden = (k !== name);
+    $("progress").hidden = !(name === "quiz" || name === "topics");
+    window.scrollTo(0, 0);
+  }
+
+  var ticksBox = $("ticks");
+  var ticks = STEPS.map(function () { var t = el("span", "tick"); ticksBox.appendChild(t); return t; });
+
+  var idx, answered, scores, picks, kres, kSel, kConf, kAuto;
+  function reset() {
+    idx = 0; answered = false;
+    scores = { saver: 0, planner: 0, hustler: 0, treat: 0 };
+    picks = [];
+    kres = []; kSel = null; kConf = null; kAuto = false;
+    var boxes = document.querySelectorAll("#topic-list input");
+    for (var i = 0; i < boxes.length; i++) boxes[i].checked = false;
+    updateTopicCount();
+    $("copy-box").hidden = true;
+    $("copy-status").textContent = "";
+  }
+
+  function optionButtons() { return Array.prototype.slice.call(document.querySelectorAll("#q-options .opt")); }
+
+  function setCount(text) { $("q-count").textContent = text; }
+  function paintTicks() { ticks.forEach(function (t, i) { t.className = "tick" + (i <= idx ? " done" : ""); }); }
+
+  function renderStep() {
+    var st = STEPS[idx];
+    paintTicks();
+    if (st.kind === "t") { renderTopics(); return; }
+    answered = false; kSel = null; kConf = null; kAuto = false;
+    show("quiz");
+    var list = $("q-options");
+    list.replaceChildren();
+    $("conf").hidden = true;
+    $("check").hidden = true;
+    $("fact").hidden = true;
+    $("fact-verdict").hidden = true;
+    var q, opts;
+    if (st.kind === "s") {
+      q = SCEN[st.i];
+      setCount("Part 1 of 3 · Scenario " + (st.i + 1) + " of " + SCEN.length);
+      $("q-topic").textContent = q.topic;
+      $("fact-label").textContent = "Money fact";
+      $("fact-text").textContent = q.fact;
+      opts = shuffle(q.opts);
+    } else {
+      q = KNOW[st.i];
+      setCount("Part 2 of 3 · Quick check " + (st.i + 1) + " of " + KNOW.length);
+      $("q-topic").textContent = "Quick check · " + q.topic;
+      $("fact-label").textContent = "Answer";
+      $("fact-text").textContent = q.why;
+      opts = shuffle(q.opts).concat([{ text: "I'm not sure", unsure: true }]);
+      buildSeg();
+    }
+    $("q-text").textContent = q.q;
+    opts.forEach(function (o, i) {
+      var li = el("li");
+      var b = el("button", "opt");
+      b.type = "button";
+      if (o.t) b.dataset.type = o.t;
+      if (o.right) b.dataset.right = "1";
+      if (o.unsure) b.dataset.unsure = "1";
+      b.appendChild(el("span", "key", o.unsure ? "?" : "ABCD".charAt(i)));
+      var txt = el("span", "txt");
+      txt.appendChild(document.createTextNode(o.text));
+      b.appendChild(txt);
+      b.addEventListener("click", function () { onOption(b); });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    $("next").textContent = "Next question";
+    window.scrollTo(0, 0);
+    $("q-text").focus({ preventScroll: true });
+  }
+
+  function onOption(btn) {
+    var st = STEPS[idx];
+    if (answered) return;
+    if (st.kind === "s") { pickScenario(btn); return; }
+    optionButtons().forEach(function (b) {
+      b.classList.toggle("picked", b === btn);
+      b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+    });
+    kSel = btn;
+    if (btn.dataset.unsure === "1") {
+      kConf = 0; kAuto = true;
+      $("conf").hidden = true;
+    } else {
+      if (kAuto) { kConf = null; kAuto = false; clearSeg(); }
+      $("conf").hidden = false;
+    }
+    updateCheck();
+  }
+
+  function pickScenario(btn) {
+    answered = true;
+    scores[btn.dataset.type]++;
+    picks.push(btn.dataset.type);
+    optionButtons().forEach(function (b) {
+      b.classList.add(b === btn ? "picked" : "dim");
+      b.setAttribute("aria-disabled", "true");
+    });
+    btn.setAttribute("aria-pressed", "true");
+    revealFact();
+  }
+
+  var segBtns = [];
+  function buildSeg() {
+    var seg = $("seg");
+    seg.replaceChildren();
+    segBtns = CONF.map(function (label, i) {
+      var b = el("button", "seg-btn", label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () { onSeg(i); });
+      seg.appendChild(b);
+      return b;
+    });
+  }
+  function clearSeg() { segBtns.forEach(function (b) { b.setAttribute("aria-pressed", "false"); }); }
+  function onSeg(i) {
+    if (answered) return;
+    kConf = i; kAuto = false;
+    segBtns.forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+    updateCheck();
+  }
+  function updateCheck() {
+    var ready = !!kSel && kConf !== null;
+    $("check").hidden = !ready;
+    if (ready) $("check").scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function addTag(btn, text) {
+    btn.querySelector(".txt").appendChild(el("span", "tag", text));
+  }
+
+  function checkAnswer() {
+    if (answered || !kSel || kConf === null) return;
+    answered = true;
+    var k = KNOW[STEPS[idx].i];
+    var unsure = kSel.dataset.unsure === "1";
+    var right = kSel.dataset.right === "1";
+    kres.push({ topic: k.topic, right: right, unsure: unsure, conf: kConf });
+    optionButtons().forEach(function (b) {
+      b.classList.remove("picked");
+      b.setAttribute("aria-disabled", "true");
+      var isRight = b.dataset.right === "1";
+      if (isRight) { b.classList.add("right"); addTag(b, b === kSel ? "Your answer, correct" : "Correct answer"); }
+      else if (b === kSel) { b.classList.add(unsure ? "picked" : "wrong"); addTag(b, "Your answer"); }
+      else { b.classList.add("dim"); }
+    });
+    segBtns.forEach(function (b) { b.setAttribute("aria-disabled", "true"); });
+    $("check").hidden = true;
+    var v = $("fact-verdict");
+    v.textContent = unsure ? "No problem, that's what this check is for." : (right ? "Correct." : "Not quite.");
+    v.hidden = false;
+    revealFact();
+  }
+
+  function revealFact() {
+    $("fact").hidden = false;
+    var nx = $("next");
+    nx.focus({ preventScroll: true });
+    nx.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function next() {
+    if (!answered) return;
+    idx++;
+    renderStep();
+  }
+
+  /* Topics */
+  var topicList = $("topic-list");
+  TOPICS.forEach(function (t, i) {
+    var lab = el("label", "chk");
+    var inp = document.createElement("input");
+    inp.type = "checkbox";
+    inp.id = "topic-" + i;
+    inp.value = t;
+    inp.dataset.i = String(i);
+    inp.addEventListener("change", updateTopicCount);
+    lab.appendChild(inp);
+    lab.appendChild(el("span", null, t));
+    topicList.appendChild(lab);
+  });
+  function selectedTopics() {
+    return Array.prototype.slice.call(document.querySelectorAll("#topic-list input:checked")).map(function (i) { return i.value; });
+  }
+  function updateTopicCount() {
+    var n = selectedTopics().length;
+    $("copy").textContent = "Copy selected topics (" + n + ")";
+    $("copy").setAttribute("aria-disabled", n ? "false" : "true");
+    $("copy-status").textContent = "";
+    $("copy-box").hidden = true;
+  }
+  function renderTopics() {
+    show("topics");
+    setCount("Part 3 of 3 · Last question");
+    $("t-title").focus({ preventScroll: true });
+  }
+  function copyTopics() {
+    var list = selectedTopics();
+    if (!list.length) return;
+    var text = list.join("\n");
+    var status = $("copy-status");
+    function fallback() {
+      var box = $("copy-box");
+      box.hidden = false;
+      box.value = text;
+      box.focus();
+      box.select();
+      status.textContent = "Press Ctrl+C or Cmd+C to copy.";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied."; }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  /* Result */
+  function fillList(id, items) {
+    var ul = $(id);
+    ul.replaceChildren();
+    items.forEach(function (s) { ul.appendChild(el("li", null, s)); });
+  }
+
+  function renderResult() {
+    var total = SCEN.length;
+    var ranked = Object.keys(scores).map(function (k) { return { k: k, n: scores[k] }; })
+      .sort(function (a, b) { return b.n - a.n; });
+    var top = ranked[0], second = ranked[1];
+    var t = TYPES[top.k];
+
+    $("screen-result").className = "screen t-" + top.k;
+    $("r-name").textContent = t.name;
+    $("r-tag").textContent = t.tagline;
+    $("r-desc").textContent = t.desc;
+
+    var blend = $("r-blend");
+    var secondPct = Math.round(second.n / total * 100);
+    if (second.n === top.n) {
+      blend.textContent = "Tied with " + TYPES[second.k].name + " at " + secondPct + "%. Read both cards, because you are a mix of the two.";
+    } else if (second.n > 0) {
+      blend.textContent = "Runner-up: " + TYPES[second.k].name + " (" + secondPct + "%).";
+    } else {
+      blend.textContent = "";
+    }
+    blend.hidden = !blend.textContent;
+
+    var bars = $("r-bars");
+    bars.replaceChildren();
+    var fills = [];
+    ranked.forEach(function (r) {
+      var pct = Math.round(r.n / total * 100);
+      var row = el("div", "bar t-" + r.k);
+      row.appendChild(el("span", "n", TYPES[r.k].name));
+      var track = el("div", "track");
+      var fill = el("div", "fill");
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el("span", "pct", pct + "%"));
+      bars.appendChild(row);
+      fills.push([fill, pct]);
+    });
+
+    fillList("r-strengths", t.strengths);
+    fillList("r-watch", t.watch);
+    var moves = $("r-moves");
+    moves.replaceChildren();
+    t.moves.forEach(function (m) {
+      var li = el("li");
+      li.appendChild(el("span", "mt", m.t));
+      li.appendChild(el("span", "md", m.d));
+      moves.appendChild(li);
+    });
+
+    /* Knowledge check */
+    var correct = kres.filter(function (r) { return r.right; }).length;
+    $("kc-score").textContent = correct + " of " + kres.length + " correct";
+    var rows = $("kc-rows");
+    rows.replaceChildren();
+    kres.forEach(function (r) {
+      var li = el("li", "kc-row");
+      li.appendChild(el("span", "kt", r.topic));
+      li.appendChild(el("span", "kr", r.unsure ? "Not sure" : (r.right ? "Correct" : "Missed")));
+      li.appendChild(el("span", "kf mono", r.unsure ? "No answer" : CONF[r.conf]));
+      rows.appendChild(li);
+    });
+    var sureWrong = kres.filter(function (r) { return !r.unsure && !r.right && r.conf === 2; });
+    var guessRight = kres.filter(function (r) { return !r.unsure && r.right && r.conf === 0; });
+    var notes = [];
+    if (sureWrong.length) {
+      notes.push("You felt very sure about " + sureWrong.length + (sureWrong.length === 1 ? " answer" : " answers") + " that turned out to be wrong (" + sureWrong.map(function (r) { return r.topic.toLowerCase(); }).join(", ") + "). Those are the best topics to learn next.");
+    }
+    if (guessRight.length) {
+      notes.push("You got " + guessRight.length + (guessRight.length === 1 ? " answer" : " answers") + " right while guessing, so you may know more than you think.");
+    }
+    if (!notes.length) {
+      notes.push(correct === kres.length ? "You got every question right." : "Your confidence lined up with your answers. Read the explanations for any you missed.");
+    }
+    $("kc-note").textContent = notes.join(" ");
+
+    var picks = selectedTopics();
+    if (picks.length) fillList("r-topics", picks);
+    else fillList("r-topics", ["You didn't pick any topics."]);
+
+    $("r-code").textContent = buildCode();
+    $("code-box").hidden = true;
+    $("code-status").textContent = "";
+    submitResponse();
+
+    show("result");
+    setTimeout(function () {
+      fills.forEach(function (f) { f[0].style.width = f[1] + "%"; });
+    }, 40);
+    $("r-name").focus({ preventScroll: true });
+  }
+
+  function begin() {
+    reset();
+    renderStep();
+  }
+  $("start").addEventListener("click", begin);
+  $("check").addEventListener("click", checkAnswer);
+  $("next").addEventListener("click", next);
+  $("copy").addEventListener("click", copyTopics);
+  $("topics-done").addEventListener("click", renderResult);
+  $("retake").addEventListener("click", begin);
+
+  /* Result codes. The pure helpers sit between the two markers so they can be tested on their own. */
+  function selectedIdx() {
+    return Array.prototype.slice.call(document.querySelectorAll("#topic-list input:checked")).map(function (i) { return Number(i.dataset.i); });
+  }
+  /* pure:start */
+  var LETTER = { saver: "S", planner: "P", hustler: "H", treat: "T" };
+  var FROM = { S: "saver", P: "planner", H: "hustler", T: "treat" };
+  var CODE_RE = /FF1-[SPHT]{10}-(?:[RWU][0-2]){4}-[0-9A-F]{3}/gi;
+
+  function buildCode() {
+    var s = picks.map(function (t) { return LETTER[t]; }).join("");
+    var k = kres.map(function (r) { return (r.unsure ? "U" : (r.right ? "R" : "W")) + (r.unsure ? 0 : r.conf); }).join("");
+    var mask = 0;
+    selectedIdx().forEach(function (i) { mask |= (1 << i); });
+    var h = mask.toString(16).toUpperCase();
+    while (h.length < 3) h = "0" + h;
+    return "FF1-" + s + "-" + k + "-" + h;
+  }
+  function parseCode(code) {
+    var m = /^FF1-([SPHT]{10})-((?:[RWU][0-2]){4})-([0-9A-F]{3})$/i.exec(code.trim());
+    if (!m) return null;
+    var pk = m[1].toUpperCase().split("").map(function (c) { return FROM[c]; });
+    var ks = m[2].toUpperCase(), know = [], i;
+    for (i = 0; i < 4; i++) {
+      var c = ks.charAt(i * 2);
+      know.push({ unsure: c === "U", right: c === "R", conf: Number(ks.charAt(i * 2 + 1)) });
+    }
+    var mask = parseInt(m[3], 16), topics = [];
+    for (i = 0; i < TOPICS.length; i++) if (mask & (1 << i)) topics.push(i);
+    return { picks: pk, know: know, topics: topics };
+  }
+  function tallyPicks(pk) {
+    var sc = { saver: 0, planner: 0, hustler: 0, treat: 0 };
+    pk.forEach(function (t) { sc[t]++; });
+    return sc;
+  }
+  function topTypeOf(pk) {
+    var sc = tallyPicks(pk);
+    return Object.keys(sc).map(function (k) { return { k: k, n: sc[k] }; })
+      .sort(function (a, b) { return b.n - a.n; })[0].k;
+  }
+  function analyze(text) {
+    var lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
+    var parsed = [], skipped = 0;
+    lines.forEach(function (l) {
+      var found = l.match(CODE_RE);
+      if (found) found.forEach(function (c) { var p = parseCode(c); if (p) parsed.push(p); });
+      else skipped++;
+    });
+    return { parsed: parsed, skipped: skipped };
+  }
+  /* pure:end */
+
+  function buildPayload() {
+    var sc = tallyPicks(picks);
+    var chosen = selectedIdx();
+    return {
+      v: 1,
+      sentAt: new Date().toISOString(),
+      type: TYPES[topTypeOf(picks)].name,
+      counts: { saver: sc.saver, planner: sc.planner, hustler: sc.hustler, treat: sc.treat },
+      scenarios: picks.map(function (t) { return TYPES[t].name; }),
+      know: kres.map(function (r, i) {
+        return { topic: KNOW[i].topic, result: r.unsure ? "Not sure" : (r.right ? "Correct" : "Missed"), confidence: r.unsure ? "" : CONF[r.conf] };
+      }),
+      topics: TOPICS.map(function (t, i) { return chosen.indexOf(i) >= 0 ? 1 : 0; }),
+      code: buildCode()
+    };
+  }
+
+  function submitResponse() {
+    var st = $("send-status");
+    var codeBlock = $("code-block");
+    if (!ENDPOINT) { st.hidden = true; codeBlock.hidden = false; return; }
+    st.hidden = false;
+    st.textContent = "Sending your answers…";
+    codeBlock.hidden = true;
+    var done = false;
+    function fail() {
+      if (done) return;
+      done = true;
+      st.textContent = "Your answers could not be sent automatically. Copy your result code below and send it to the person who shared this survey.";
+      codeBlock.hidden = false;
+    }
+    try {
+      fetch(ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(buildPayload())
+      }).then(function () {
+        if (done) return;
+        done = true;
+        st.textContent = "Your answers were submitted. They do not include your name.";
+      }, fail);
+    } catch (e) { fail(); }
+  }
+
+  function copyText(text, statusEl, boxEl) {
+    function fallback() {
+      boxEl.hidden = false;
+      boxEl.value = text;
+      boxEl.focus();
+      boxEl.select();
+      statusEl.textContent = "Press Ctrl+C or Cmd+C to copy.";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { boxEl.hidden = true; statusEl.textContent = "Copied."; }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  function pctOf(x, n) { return n ? Math.round(x / n * 100) : 0; }
+  function rankRow(label, n, total, cls) {
+    var pct = pctOf(n, total);
+    var li = el("li", "rank" + (cls ? " " + cls : ""));
+    var top = el("div", "rank-top");
+    top.appendChild(el("span", "rank-label", label));
+    top.appendChild(el("span", "mono", n + " (" + pct + "%)"));
+    li.appendChild(top);
+    var track = el("div", "track");
+    var fill = el("div", "fill");
+    fill.style.width = pct + "%";
+    track.appendChild(fill);
+    li.appendChild(track);
+    return li;
+  }
+
+  var last = null;
+  function renderAdmin() {
+    var text = $("codes").value;
+    try { window.localStorage.setItem("ff-codes", text); } catch (e) {}
+    var st = $("a-status");
+    $("a-copy-status").textContent = "";
+    $("a-copy-box").hidden = true;
+    if (!text.trim()) { st.textContent = ""; $("a-out").hidden = true; last = null; return; }
+    var a = analyze(text), n = a.parsed.length;
+    var msg = n + (n === 1 ? " response" : " responses") + " counted";
+    if (a.skipped) msg += ", " + a.skipped + (a.skipped === 1 ? " line" : " lines") + " skipped because no result code was found";
+    st.textContent = msg + ".";
+    if (!n) { $("a-out").hidden = true; last = null; return; }
+
+    var types = { saver: 0, planner: 0, hustler: 0, treat: 0 };
+    a.parsed.forEach(function (p) { types[topTypeOf(p.picks)]++; });
+    var totalRight = 0;
+    var know = KNOW.map(function (k, i) {
+      var o = { right: 0, sureWrong: 0, unsure: 0 };
+      a.parsed.forEach(function (p) {
+        var r = p.know[i];
+        if (r.unsure) o.unsure++;
+        else if (r.right) { o.right++; totalRight++; }
+        else if (r.conf === 2) o.sureWrong++;
+      });
+      return o;
+    });
+    var topics = TOPICS.map(function () { return 0; });
+    a.parsed.forEach(function (p) { p.topics.forEach(function (i) { topics[i]++; }); });
+    last = { n: n, parsed: a.parsed, types: types, know: know, topics: topics, avg: totalRight / n };
+
+    var tl = $("a-types");
+    tl.replaceChildren();
+    Object.keys(types).sort(function (x, y) { return types[y] - types[x]; }).forEach(function (k) {
+      tl.appendChild(rankRow(TYPES[k].name, types[k], n, "t-" + k));
+    });
+    $("a-avg").textContent = "Average score " + last.avg.toFixed(1) + " of " + KNOW.length;
+    var kl = $("a-kc");
+    kl.replaceChildren();
+    KNOW.forEach(function (k, i) {
+      var o = know[i];
+      var li = el("li", "kc-row stack");
+      li.appendChild(el("span", "kt", k.topic));
+      li.appendChild(el("span", "kd", pctOf(o.right, n) + "% correct. " + o.sureWrong + " very sure but wrong. " + o.unsure + " not sure."));
+      kl.appendChild(li);
+    });
+    var pl = $("a-topics");
+    pl.replaceChildren();
+    topics.map(function (c, i) { return { c: c, i: i }; })
+      .sort(function (x, y) { return y.c - x.c; })
+      .forEach(function (o) { pl.appendChild(rankRow(TOPICS[o.i], o.c, n)); });
+    $("a-out").hidden = false;
+  }
+
+  function totalsTSV() {
+    var d = last;
+    if (!d) return "";
+    var L = ["Money type\tCount\tPercent"];
+    Object.keys(TYPES).forEach(function (k) { L.push(TYPES[k].name + "\t" + d.types[k] + "\t" + pctOf(d.types[k], d.n) + "%"); });
+    L.push("");
+    L.push("Quick check\tCorrect\tVery sure but wrong\tNot sure\tResponses");
+    KNOW.forEach(function (k, i) {
+      var o = d.know[i];
+      L.push(k.topic + "\t" + pctOf(o.right, d.n) + "%\t" + o.sureWrong + "\t" + o.unsure + "\t" + d.n);
+    });
+    L.push("");
+    L.push("Workshop topic\tVotes\tPercent");
+    d.topics.map(function (c, i) { return { c: c, i: i }; })
+      .sort(function (x, y) { return y.c - x.c; })
+      .forEach(function (o) { L.push(TOPICS[o.i] + "\t" + o.c + "\t" + pctOf(o.c, d.n) + "%"); });
+    return L.join("\n");
+  }
+  function rowsTSV() {
+    var d = last;
+    if (!d) return "";
+    var head = ["Money type", "Saver", "Planner", "Hustler", "Treat-Yourself"], i;
+    for (i = 1; i <= SCEN.length; i++) head.push("Scenario " + i);
+    KNOW.forEach(function (k) { head.push(k.topic + " result"); head.push(k.topic + " confidence"); });
+    TOPICS.forEach(function (t) { head.push("Topic: " + t); });
+    var rows = d.parsed.map(function (p) {
+      var sc = tallyPicks(p.picks);
+      var r = [TYPES[topTypeOf(p.picks)].name, sc.saver, sc.planner, sc.hustler, sc.treat];
+      p.picks.forEach(function (t) { r.push(TYPES[t].name); });
+      p.know.forEach(function (k) {
+        r.push(k.unsure ? "Not sure" : (k.right ? "Correct" : "Missed"));
+        r.push(k.unsure ? "" : CONF[k.conf]);
+      });
+      TOPICS.forEach(function (t, j) { r.push(p.topics.indexOf(j) >= 0 ? 1 : 0); });
+      return r.join("\t");
+    });
+    return [head.join("\t")].concat(rows).join("\n");
+  }
+
+  function openAdmin() {
+    if (!screens.admin.hidden) return;
+    var box = $("codes");
+    if (!box.value) { try { box.value = window.localStorage.getItem("ff-codes") || ""; } catch (e) {} }
+    renderAdmin();
+    show("admin");
+    $("a-title").focus({ preventScroll: true });
+  }
+  function route() {
+    var h = window.location.hash || "";
+    if (h === "#organizer") openAdmin();
+    else if (!screens.admin.hidden) show("start");
+  }
+
+  $("copy-code").addEventListener("click", function () { copyText($("r-code").textContent, $("code-status"), $("code-box")); });
+  $("codes").addEventListener("input", renderAdmin);
+  $("a-copy-totals").addEventListener("click", function () { copyText(totalsTSV(), $("a-copy-status"), $("a-copy-box")); });
+  $("a-copy-rows").addEventListener("click", function () { copyText(rowsTSV(), $("a-copy-status"), $("a-copy-box")); });
+  $("open-admin").addEventListener("click", function (e) {
+    e.preventDefault();
+    try { window.location.hash = "organizer"; } catch (err) {}
+    openAdmin();
+  });
+  $("a-back").addEventListener("click", function () {
+    try { window.location.hash = "survey"; } catch (err) {}
+    show("start");
+  });
+  window.addEventListener("hashchange", route);
+
+  reset();
+  route();
+})();
+</script>
+</body>
+</html>
