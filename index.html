@@ -274,7 +274,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   <section class="screen intro" id="screen-start" aria-labelledby="start-title">
     <p class="label">Financial Habits &amp; Literacy Survey &middot; Grade 11 and 12</p>
     <h1 id="start-title">Financially Forward</h1>
-    <p class="lead">Work through 10 real-life money scenarios, take a 4-question knowledge check, and tell us what you'd like to learn. You finish with your money type and a snapshot of what you know. It takes about 6 minutes.</p>
+    <p class="lead">Answer 10 short money scenarios and 4 quick knowledge questions, then pick topics you'd like to learn. You get your money type at the end. About 5 minutes.</p>
     <ul class="types" aria-label="The four money types">
       <li class="t-saver"><span class="swatch"></span><div><div class="name">The Saver</div><div class="blurb">Puts security first and likes a cushion.</div></div></li>
       <li class="t-planner"><span class="swatch"></span><div><div class="name">The Planner</div><div class="blurb">Researches and budgets before deciding.</div></div></li>
@@ -304,7 +304,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   </section>
 
   <section class="screen" id="screen-topics" aria-labelledby="t-title" hidden>
-    <h2 class="q-text" id="t-title" tabindex="-1">Which topics would you find most valuable to learn about in an interactive workshop?</h2>
+    <h2 class="q-text" id="t-title" tabindex="-1">Which topics would you want to learn in a workshop?</h2>
     <fieldset class="chk-list" id="topic-list">
       <legend class="label" style="margin-bottom:0.75rem">Select all that apply</legend>
     </fieldset>
@@ -420,7 +420,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 <script>
 (function () {
   /* Paste your Google Apps Script web app URL between the quotes. Leave it empty to use result codes only. */
-  var ENDPOINT = "";
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbxV885RwGa35IN_FK78BznfC27zMjj1ylOhi97EUIuo77wfonr9trk_HejoLvJ3sXY3/exec";
 
   var TYPES = {
     saver: {
@@ -476,160 +476,160 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   var SCEN = [
     {
       topic: "Managing Unexpected Income",
-      q: "You receive $500 unexpectedly. How would you decide what to do with the money?",
+      q: "You get $500 you weren't expecting. What do you do with it?",
       opts: [
-        { t: "saver", text: "Put most of it into savings first and only spend what's left." },
-        { t: "planner", text: "Check my upcoming expenses and goals, then divide it up on purpose." },
-        { t: "hustler", text: "Look for a way to make it grow, like investing it or starting a small business idea." },
-        { t: "treat", text: "Spend a good part on something I've been wanting and save the rest." }
+        { t: "saver", text: "Save most of it." },
+        { t: "planner", text: "Check my upcoming costs and goals, then split it." },
+        { t: "hustler", text: "Find a way to grow it, like investing." },
+        { t: "treat", text: "Spend some on something fun and save the rest." }
       ],
-      fact: "Unplanned money is easy to spend without noticing. Deciding the split before you spend, for example some for needs, some for savings and some for fun, keeps the whole amount from vanishing."
+      fact: "Decide your split before you spend. Unplanned money disappears fast."
     },
     {
       topic: "Budgeting and Expense Management",
-      q: "You earn $800 a month from a part-time job. How would you manage it to cover your personal expenses and still save?",
+      q: "You earn $800 a month from a part-time job. How do you handle it?",
       opts: [
-        { t: "saver", text: "Move a set amount into savings as soon as I'm paid, then spend what's left." },
-        { t: "planner", text: "Write a budget: list my regular costs, then split the rest between spending and saving." },
-        { t: "hustler", text: "Cover my basics and put the extra toward a side hustle or investment." },
-        { t: "treat", text: "Spend on what I enjoy during the month and save whatever remains at the end." }
+        { t: "saver", text: "Save a set amount first, then spend the rest." },
+        { t: "planner", text: "Write a budget for my costs, spending and saving." },
+        { t: "hustler", text: "Cover the basics and put the extra into a side hustle or investing." },
+        { t: "treat", text: "Spend as I go and save what's left." }
       ],
-      fact: "A common guide is the 50/30/20 rule: about half of income for needs, 30% for wants and 20% for savings. On $800 a month that is $400, $240 and $160. Paying yourself first makes saving far more likely than saving what is left."
+      fact: "A common guide is 50/30/20: needs, wants, savings. On $800 that is $400, $240 and $160. Saving first works better than saving what's left."
     },
     {
       topic: "Understanding Your Paycheque",
-      q: "You receive your first paycheque and the amount deposited is lower than your total earnings. What would you do to understand the difference?",
+      q: "Your first paycheque is less than you expected. What do you do?",
       opts: [
-        { t: "saver", text: "Ask my manager or a parent to explain it, then budget only on the take-home amount." },
-        { t: "planner", text: "Read the pay stub line by line to see each deduction." },
-        { t: "hustler", text: "Look up how to keep more of what I earn, like tax credits and filing a return." },
-        { t: "treat", text: "Not worry about it. What's in my account is what I get to spend." }
+        { t: "saver", text: "Ask someone to explain it, then budget with the take-home amount." },
+        { t: "planner", text: "Read the pay stub line by line." },
+        { t: "hustler", text: "Look up ways to keep more, like tax credits." },
+        { t: "treat", text: "Nothing. I spend what's in my account." }
       ],
-      fact: "Gross pay is what you earned. Net pay is what you take home after deductions. Depending on your age and pay, those can include income tax, EI and, from age 18, CPP. If your income is low, you may get some of the income tax back by filing a tax return."
+      fact: "Gross pay is what you earned. Net pay is what you take home after deductions like income tax, EI and CPP (from age 18). You may get some tax back by filing a return."
     },
     {
       topic: "Making Informed Purchasing Decisions",
-      q: "You're considering a new $1,300 phone. Your current phone still works, but the new model has extra features. What would influence your decision?",
+      q: "Your phone works, but a new $1,300 one has extra features. What decides it?",
       opts: [
-        { t: "saver", text: "Whether my current phone still does the job. If it does, I keep it." },
-        { t: "planner", text: "The total cost, the features I'd actually use, and what else that money could do." },
-        { t: "hustler", text: "Whether that money could earn more somewhere else than it would in a phone." },
-        { t: "treat", text: "How much I'd enjoy it every day, as long as I can pay for it without stress." }
+        { t: "saver", text: "Does mine still work? Then I keep it." },
+        { t: "planner", text: "The total cost and what else the money could do." },
+        { t: "hustler", text: "Whether the money could earn more elsewhere." },
+        { t: "treat", text: "How much I'd enjoy it, if I can afford it." }
       ],
-      fact: "Opportunity cost is what you give up when you choose something. $1,300 spent on a phone cannot also go toward savings or a goal. A payment plan spreads the cost out but does not lower it, and missed payments can bring fees."
+      fact: "Opportunity cost is what you give up when you choose something. Payment plans spread out the cost but don't lower it."
     },
     {
       topic: "Understanding Credit and Debt",
-      q: "You're thinking about applying for your first credit card. What's the most important thing to understand before using it?",
+      q: "You're getting your first credit card. What matters most to understand?",
       opts: [
-        { t: "saver", text: "Making sure I can pay the full balance every month." },
-        { t: "planner", text: "The interest rate and fees, and how they add up over time." },
-        { t: "hustler", text: "The rewards and cash back I could earn." },
-        { t: "treat", text: "The credit limit and what it lets me buy." }
+        { t: "saver", text: "Paying the full balance every month." },
+        { t: "planner", text: "The interest rate and fees." },
+        { t: "hustler", text: "The rewards and cash back." },
+        { t: "treat", text: "The credit limit and what I can buy." }
       ],
-      fact: "If you pay your full statement balance by the due date, you usually pay no interest on purchases. If you carry a balance, interest is often around 20% a year or more. On-time payments help build your credit score, which in Canada runs from 300 to 900."
+      fact: "Pay your full balance by the due date and you usually pay no interest. Carrying a balance can cost around 20% a year or more. On-time payments build your credit score (300 to 900 in Canada)."
     },
     {
       topic: "Evaluating Financial Opportunities",
-      q: "You see an investment ad online claiming a 40% return in a short time. How would you approach it?",
+      q: "An ad promises a 40% return fast. What do you do?",
       opts: [
-        { t: "saver", text: "Avoid it. If it sounds too good to be true, my money stays put." },
-        { t: "planner", text: "Research who is selling it and compare it with other options before deciding." },
-        { t: "hustler", text: "Put in a small amount I can afford to lose and watch how it does." },
-        { t: "treat", text: "Jump in. If it pays off, I get to treat myself." }
+        { t: "saver", text: "Ignore it. It sounds too good to be true." },
+        { t: "planner", text: "Research who's selling it first." },
+        { t: "hustler", text: "Try a small amount I can afford to lose." },
+        { t: "treat", text: "Jump in. If it pays off, I treat myself." }
       ],
-      fact: "A high return always comes with high risk, and no legitimate investment can guarantee a big profit. Pressure to act fast is a classic scam sign. Before sending money, check that the seller is registered with your provincial securities regulator."
+      fact: "High returns mean high risk, and no real investment can guarantee a profit. Pressure to act fast is a scam sign. Check the seller is registered with your provincial securities regulator."
     },
     {
       topic: "Recognizing Hidden Costs",
-      q: "You're planning a weekend trip with friends. The advertised price is $100 per person, but transportation, meals and extra fees aren't included. How would you decide if it fits your budget?",
+      q: "A trip with friends costs $100, but travel and food aren't included. How do you decide if you can afford it?",
       opts: [
-        { t: "saver", text: "Ask the group for cheaper options, like carpooling and cooking some meals, to spend as little as I can." },
-        { t: "planner", text: "List every cost, including transport, food, activities and extras, and check the total against my budget." },
-        { t: "hustler", text: "Pick up extra shifts or sell something to cover the cost so my savings stay untouched." },
-        { t: "treat", text: "Say yes. A trip with friends is worth some extra spending." }
+        { t: "saver", text: "Look for cheaper options, like carpooling." },
+        { t: "planner", text: "Add up every cost and check my budget." },
+        { t: "hustler", text: "Pick up extra shifts to cover it." },
+        { t: "treat", text: "Say yes. Time with friends is worth it." }
       ],
-      fact: "The advertised price is rarely the total price. Transportation, meals, activities and spending money can easily push a $100 trip past $250. List every cost before you say yes, then add about 10% as a cushion for surprises."
+      fact: "The advertised price is rarely the total. Add up every cost, then add about 10% for surprises."
     },
     {
       topic: "Preparing for Financial Independence",
-      q: "You plan to move out after graduating high school. Which expenses would you need to account for to see if you can afford it?",
+      q: "You're moving out after graduation. How do you work out if you can afford it?",
       opts: [
-        { t: "saver", text: "Rent and bills first, plus savings for a deposit and emergencies." },
-        { t: "planner", text: "Rent, utilities, groceries, transit, phone and insurance, added into one monthly total." },
-        { t: "hustler", text: "The income I'd need, so I'd work out how to earn enough before moving." },
-        { t: "treat", text: "Rent and food, with room left for going out and a social life." }
+        { t: "saver", text: "Rent and bills first, plus a deposit and emergency savings." },
+        { t: "planner", text: "Add up rent, utilities, groceries, transit and phone into one monthly total." },
+        { t: "hustler", text: "Figure out how much I'd need to earn." },
+        { t: "treat", text: "Rent and food, with room left to go out." }
       ],
-      fact: "Beyond rent, budget for utilities, internet, groceries, transit, a phone plan and tenant insurance. Landlords may also ask for a deposit up front, often one month's rent. A common guide is to keep rent at or below about 30% of your before-tax income."
+      fact: "Beyond rent, plan for utilities, internet, groceries, transit, a phone plan and tenant insurance. A deposit is often one month's rent. A common guide is rent under about 30% of before-tax income."
     },
     {
       topic: "Building Financial Security",
-      q: "You've saved $1,000, but you have upcoming expenses and no emergency savings. How would you divide your money?",
+      q: "You have $1,000 saved, bills coming up, and no emergency fund. What do you do?",
       opts: [
-        { t: "saver", text: "Put most of it aside as an emergency fund and only spend what's urgent." },
-        { t: "planner", text: "List the upcoming expenses, cover the essential ones, and put what's left into an emergency fund." },
-        { t: "hustler", text: "Cover the essentials, then look for extra income to rebuild my savings quickly." },
-        { t: "treat", text: "Pay the upcoming bills and keep a little for fun so I don't feel stuck." }
+        { t: "saver", text: "Keep most of it as an emergency fund." },
+        { t: "planner", text: "Pay the essentials, then put the rest in an emergency fund." },
+        { t: "hustler", text: "Pay the essentials, then look for extra income." },
+        { t: "treat", text: "Pay the bills and keep a little for fun." }
       ],
-      fact: "Many experts suggest an emergency fund that covers three to six months of basic expenses. If that sounds huge, start with a smaller goal such as $500 or one month of costs, so a surprise bill does not end up on a credit card."
+      fact: "Many experts suggest 3 to 6 months of basic costs. Starting with $500 or one month still helps."
     },
     {
       topic: "Planning for Long-Term Financial Goals",
-      q: "Thinking about your finances 10 years from now, which area would you most want to understand or improve?",
+      q: "Looking 10 years ahead, what do you most want to get better at?",
       opts: [
-        { t: "saver", text: "Building savings and an emergency fund." },
-        { t: "planner", text: "Planning for big goals like school costs and buying a home." },
+        { t: "saver", text: "Saving and emergency funds." },
+        { t: "planner", text: "Planning for school and buying a home." },
         { t: "hustler", text: "Investing and growing my money." },
-        { t: "treat", text: "Making sure I can still afford the experiences I care about, like travel." }
+        { t: "treat", text: "Affording the experiences I care about." }
       ],
-      fact: "Saving $100 a month at a steady 6% grows to about $16,400 in 10 years and about $46,200 in 20 years. Only $24,000 of that is your own deposits. Real returns vary, so treat this as an example."
+      fact: "Saving $100 a month at a steady 6% grows to about $16,400 in 10 years and $46,200 in 20. Only $24,000 of that is your own deposits. Real returns vary."
     }
   ];
 
   var KNOW = [
     {
       topic: "Paycheques",
-      q: "Your gross pay for a shift is $120, but you take home less. What explains the difference?",
+      q: "Your gross pay is $120 but you take home less. Why?",
       opts: [
-        { text: "Deductions such as income tax and EI, plus CPP if you're 18 or older", right: true },
-        { text: "The bank charges a fee to deposit paycheques" },
-        { text: "Employers hold back part of your pay for your first three months" },
-        { text: "Your employer almost certainly made a mistake" }
+        { text: "Deductions like income tax, EI and CPP (if 18+)", right: true },
+        { text: "The bank charges a deposit fee" },
+        { text: "Employers hold back pay for the first 3 months" },
+        { text: "Your employer made a mistake" }
       ],
-      why: "Employers take deductions off your pay and send them to the government. Your pay stub lists each one, so read it line by line."
+      why: "Employers take deductions and send them to the government. Your pay stub lists each one."
     },
     {
       topic: "Credit cards",
-      q: "A credit card charges 20% interest a year. You buy something and pay the full statement balance by the due date. How much interest do you pay on that purchase?",
+      q: "A card charges 20% interest. You pay the full balance by the due date. How much interest do you pay?",
       opts: [
-        { text: "Usually none, because of the grace period", right: true },
-        { text: "20% of the purchase price" },
-        { text: "Half the yearly rate, because you paid on time" },
-        { text: "A flat $20 fee on every purchase" }
+        { text: "Usually none (grace period)", right: true },
+        { text: "20% of the purchase" },
+        { text: "Half the yearly rate" },
+        { text: "A flat $20 fee" }
       ],
-      why: "Most cards give a grace period. Pay the full statement balance by the due date and you usually pay no interest on purchases. Interest starts when you carry a balance."
+      why: "Most cards have a grace period. Interest starts when you carry a balance."
     },
     {
       topic: "Investment scams",
-      q: "An online ad promises a guaranteed 25% return in three months. What is the most accurate way to read it?",
+      q: "An ad promises a guaranteed 25% return in 3 months. What should you think?",
       opts: [
-        { text: "A warning sign, because high returns carry high risk and nothing is guaranteed", right: true },
-        { text: "A good deal if the website looks professional" },
-        { text: "Safe if a friend says they've already joined" },
-        { text: "Fine as long as I start with a small amount" }
+        { text: "It's a warning sign. Nothing is guaranteed.", right: true },
+        { text: "A good deal if the site looks professional" },
+        { text: "Safe if a friend joined" },
+        { text: "Fine if I start small" }
       ],
-      why: "Real investments cannot guarantee big returns. Scams often use professional websites, glowing testimonials and pressure to act fast."
+      why: "Real investments can't guarantee big returns. Scams often look professional and push you to act fast."
     },
     {
       topic: "Starting early",
-      q: "Ava and Ben each save $100 a month at the same return, and both stop at age 40. Ava starts at 18 and Ben starts at 28. Who ends up with more?",
+      q: "Ava saves $100 a month from age 18, and Ben from age 28. Both stop at 40 with the same return. Who ends up with more?",
       opts: [
-        { text: "Ava, because her money has more years to grow", right: true },
-        { text: "They end up the same, since they save the same monthly amount" },
-        { text: "Ben, because older savers earn higher returns" },
-        { text: "It depends only on luck, not on when they start" }
+        { text: "Ava. Her money has more time to grow.", right: true },
+        { text: "The same, since they save the same monthly amount" },
+        { text: "Ben, because older savers earn more" },
+        { text: "It's just luck" }
       ],
-      why: "Time is the biggest ingredient in compound growth. Ava deposits more in total, and her early deposits also have extra years to earn returns."
+      why: "Time matters most. Ava deposits more, and her early deposits earn returns for longer."
     }
   ];
 
